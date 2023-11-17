@@ -6,9 +6,10 @@ const Home = () => {
   useEffect(() => {
     const getData = async () => {
       try {
-        const value = await AsyncStorage.getItem('wallet');
-        if (value !== null) {
-          console.log('Data yang ditemukan:', JSON.parse(value));
+        const data = await AsyncStorage.getItem('data');
+
+        if (data !== null) {
+          console.log('data:', JSON.parse(data));
         } else {
           console.log('Data tidak ditemukan.');
         }
