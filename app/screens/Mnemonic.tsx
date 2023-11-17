@@ -1,15 +1,65 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-native/no-inline-styles */
 import {AppScreenProps} from 'app/types';
-import React from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import {ethers, Wallet} from 'ethers';
+import CryptoJS from 'react-native-crypto-js';
+import {setSecureValue} from '../utils';
+// import Config from 'react-native-config';
 
-const Mnemonic = ({route}: AppScreenProps) => {
-  const param = route.params as {mnemonic: string};
+// const BASE_URL = `${process.env.BASE_INFURA_URL}${process.env.INFURA_KEY}`;
+
+const Mnemonic = ({route, navigation}: AppScreenProps) => {
+  const param = route.params as {mnemonic: string; password: string};
   const mnemonic = param?.mnemonic?.split(' ');
+
+  const [wallet, setWallet] = useState<Wallet | null>(null);
+  const [isWalletCreated, setWalletCreated] = useState(false);
+
+  // console.log('BASE_URL', BASE_URL);
+
+  const provider = new ethers.providers.JsonRpcProvider(
+    'https://mainnet.infura.io/v3/2d730408bd194dbcaf2084b4d0006eb2',
+  );
+
+  const createWallet = useCallback(async () => {
+    try {
+      const newWallet = ethers.Wallet.fromMnemonic(param?.mnemonic!);
+      newWallet.connect(provider);
+      setWallet(newWallet);
+      setWalletCreated(true);
+    } catch (error) {
+      console.error('Error creating wallet:', error);
+    }
+  }, [param?.mnemonic, provider]);
+
+  useEffect(() => {
+    if (isWalletCreated && param?.password && wallet) {
+      const encryptAndStore = async () => {
+        const encryptedPrivateKey = CryptoJS.AES.encrypt(
+          wallet.privateKey,
+          param?.password,
+        ).toString();
+        await setSecureValue('privateKey', encryptedPrivateKey);
+        navigation.navigate('Address', {
+          wallet,
+          mnemonic: param?.mnemonic,
+          password: param?.password,
+        });
+      };
+
+      encryptAndStore();
+    }
+  }, [isWalletCreated, param?.password, wallet, navigation]);
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>WALLET APP</Text>
-      <Text>Save the following phrase to the secure location</Text>
+      <Text style={{textAlign: 'center'}}>
+        Before generate address, save the following phrase to the secure
+        location
+      </Text>
       <View style={styles.mnemonic}>
         {mnemonic.map((item, key) => (
           <View key={key} style={styles.mnemonicItem}>
@@ -17,8 +67,11 @@ const Mnemonic = ({route}: AppScreenProps) => {
           </View>
         ))}
       </View>
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Done</Text>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => createWallet()}
+        disabled={isWalletCreated}>
+        <Text style={styles.buttonText}>Generate Address</Text>
       </TouchableOpacity>
     </View>
   );
@@ -69,11 +122,12 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   button: {
-    backgroundColor: 'blue',
+    backgroundColor: '#772174',
     padding: 10,
     borderRadius: 8,
     marginTop: 10,
     paddingHorizontal: 24,
+    width: '100%',
   },
   buttonText: {
     color: 'white',

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-native/no-inline-styles */
 
 import React, {useState} from 'react';
@@ -9,43 +8,15 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
-import {ethers, Wallet} from 'ethers';
-import CryptoJS from 'react-native-crypto-js';
-
-import {generateMnemonic, setSecureValue} from '../utils';
+import {generateMnemonic} from '../utils';
 import {AppScreenProps} from 'app/types';
 
 const Password = ({navigation}: AppScreenProps) => {
-  const provider = new ethers.providers.JsonRpcProvider(
-    'https://mainnet.infura.io/v3/2d730408bd194dbcaf2084b4d0006eb2',
-  );
-
   const [password, setPassword] = useState('');
-  const [mnemonic, setMnemonic] = useState('');
-  const [wallet, setWallet] = useState<Wallet | null>(null);
 
   const generateAndSetMnemonic = async () => {
     const token = await generateMnemonic();
-    setMnemonic(token);
-  };
-
-  const createWallet = async () => {
-    await generateAndSetMnemonic();
-    const newWallet = ethers.Wallet.fromMnemonic(mnemonic!);
-    newWallet.connect(provider);
-    setWallet(newWallet);
-    await encryptAndStorePrivateKey();
-    navigation.navigate('Mnemonic', {mnemonic});
-  };
-
-  const encryptAndStorePrivateKey = async () => {
-    if (password && wallet) {
-      const encryptedPrivateKey = CryptoJS.AES.encrypt(
-        wallet.privateKey,
-        password,
-      ).toString();
-      await setSecureValue('privateKey', encryptedPrivateKey);
-    }
+    navigation.navigate('Mnemonic', {mnemonic: token, password});
   };
 
   return (
@@ -64,7 +35,7 @@ const Password = ({navigation}: AppScreenProps) => {
           {backgroundColor: password?.length < 8 ? '#772174BF' : '#772174'},
         ]}
         disabled={password?.length < 8}
-        onPress={() => createWallet()}>
+        onPress={generateAndSetMnemonic}>
         <Text style={styles.buttonText}>Submit</Text>
       </TouchableOpacity>
     </View>
@@ -96,6 +67,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     marginTop: 10,
+    width: '100%',
   },
   buttonText: {
     color: 'white',
