@@ -3,12 +3,9 @@ import {AppScreenProps} from 'app/types';
 import React, {useCallback, useEffect, useState} from 'react';
 import {StyleSheet, Text, TouchableOpacity, View, Alert} from 'react-native';
 import {Wallet, ethers} from 'ethers';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {BigNumber} from 'ethers/utils';
-// import jwt from 'jsonwebtoken';
-// import CryptoJS from 'crypto-js';
-// import crypto from 'react-native-crypto';
-
+import {encryptData} from '../utils';
 // const BASE_URL = `${process.env.BASE_INFURA_URL}${process.env.INFURA_KEY}`;
 // import Web3 from 'web3';
 
@@ -22,18 +19,6 @@ const Address = ({route, navigation}: AppScreenProps) => {
   const [balance, setBalance] = useState<BigNumber | number | string>();
   const [isLoading, setIsLoading] = useState(false);
 
-  // console.log('BASE_URL', BASE_URL);
-
-  // const generateSecureRandomText = async (length: number) => {
-  //   try {
-  //     const randomBytes = crypto.randomBytes(length);
-  //     return randomBytes;
-  //   } catch (error) {
-  //     console.error('Error generating secure random text:', error);
-  //     throw error; // Melemparkan kembali error agar bisa ditangkap di tempat pemanggilan
-  //   }
-  // };
-
   const fetchBalance = useCallback(async () => {
     const provider = new ethers.providers.JsonRpcProvider(
       'https://mainnet.infura.io/v3/2d730408bd194dbcaf2084b4d0006eb2',
@@ -46,7 +31,6 @@ const Address = ({route, navigation}: AppScreenProps) => {
           ethers.utils.parseUnits(newBalance.toString(), 'ether'),
         );
         const exact = ethers.utils.formatUnits(hexValue, 'ether');
-
         setBalance(exact);
       }
     } catch (error) {
@@ -61,41 +45,35 @@ const Address = ({route, navigation}: AppScreenProps) => {
     fetchBalance();
   }, [fetchBalance]);
 
-  console.log('balance', balance);
-
   const saveData = async () => {
     try {
-      // const password = CryptoJS.AES.encrypt(
-      //   param?.password,
-      //   await generateSecureRandomText(16),
-      // ).toString();
+      const secretKey = param?.password;
 
-      // const address = CryptoJS.AES.encrypt(
-      //   param?.wallet?.address!,
-      //   await generateSecureRandomText(16),
-      // ).toString();
+      if (!secretKey) {
+        throw new Error('Password is missing');
+      }
 
-      // const privateKey = CryptoJS.AES.encrypt(
-      //   param?.wallet?.privateKey!,
-      //   await generateSecureRandomText(16),
-      // ).toString();
+      const address = await encryptData(param?.wallet?.address!, secretKey);
+      const privateKey = await encryptData(
+        param?.wallet?.privateKey!,
+        secretKey,
+      );
+      const mnemonic = await encryptData(param?.mnemonic, secretKey);
 
-      // const mnemonic = CryptoJS.AES.encrypt(
-      //   param?.mnemonic,
-      //   await generateSecureRandomText(16),
-      // ).toString();
+      if (!address || !privateKey || !mnemonic) {
+        throw new Error('Encryption failed');
+      }
 
-      // const data = {
-      //   address,
-      //   balance,
-      //   mnemonic,
-      //   privateKey,
-      //   password,
-      // };
+      const data = {
+        address,
+        privateKey,
+        mnemonic,
+      };
 
-      // await AsyncStorage.setItem('data', JSON.stringify(data));
-      navigation.navigate('Home');
+      await AsyncStorage.setItem('data', JSON.stringify(data));
+      navigation.navigate('Home', {secretKey});
     } catch (error) {
+      console.error('Error during saveData:', error);
       Alert.alert(
         'Error',
         'Terjadi kesalahan dalam aplikasi.',

@@ -4,9 +4,7 @@ import {AppScreenProps} from 'app/types';
 import React, {useCallback, useEffect, useState} from 'react';
 import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import {ethers, Wallet} from 'ethers';
-import CryptoJS from 'react-native-crypto-js';
-import {setSecureValue} from '../utils';
-// import Config from 'react-native-config';
+import {setSecureValue, encryptData} from '../utils';
 
 // const BASE_URL = `${process.env.BASE_INFURA_URL}${process.env.INFURA_KEY}`;
 
@@ -37,16 +35,21 @@ const Mnemonic = ({route, navigation}: AppScreenProps) => {
   useEffect(() => {
     if (isWalletCreated && param?.password && wallet) {
       const encryptAndStore = async () => {
-        const encryptedPrivateKey = CryptoJS.AES.encrypt(
-          wallet.privateKey,
-          param?.password,
-        ).toString();
-        await setSecureValue('privateKey', encryptedPrivateKey);
-        navigation.navigate('Address', {
-          wallet,
-          mnemonic: param?.mnemonic,
-          password: param?.password,
-        });
+        try {
+          const encryptedPrivateKey = await encryptData(
+            wallet?.privateKey,
+            param?.password,
+          );
+
+          await setSecureValue('privateKey', encryptedPrivateKey);
+          navigation.navigate('Address', {
+            wallet,
+            mnemonic: param?.mnemonic,
+            password: param?.password,
+          });
+        } catch (error) {
+          console.log(error);
+        }
       };
 
       encryptAndStore();

@@ -11,7 +11,7 @@ export type AppStackParamList = {
     password: string;
     balance?: BigNumber;
   };
-  Home: undefined;
+  Home: {secretKey: string};
   Mnemonic: {mnemonic: string; password: string};
   Password: undefined;
 };
