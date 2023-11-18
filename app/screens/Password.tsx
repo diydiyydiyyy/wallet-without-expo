@@ -32,7 +32,7 @@ const Password = ({navigation}: AppScreenProps) => {
       <TouchableOpacity
         style={[
           styles.button,
-          {backgroundColor: password?.length < 8 ? '#772174BF' : '#772174'},
+          {backgroundColor: password?.length < 8 ? '#77217466' : '#772174'},
         ]}
         disabled={password?.length < 8}
         onPress={generateAndSetMnemonic}>

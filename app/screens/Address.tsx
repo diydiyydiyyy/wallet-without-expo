@@ -103,7 +103,7 @@ const Address = ({route, navigation}: AppScreenProps) => {
           styles.button,
           {
             backgroundColor:
-              isLoading || balance === undefined ? '#772174BF' : '#772174',
+              isLoading || balance === undefined ? '#77217466' : '#772174',
           },
         ]}
         onPress={() => saveData()}
