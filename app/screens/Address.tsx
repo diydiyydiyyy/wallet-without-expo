@@ -118,7 +118,9 @@ const Address = ({route, navigation}: AppScreenProps) => {
             password: param?.password,
           })
         }>
-        <Text style={styles.buttonText}>Check Other Token</Text>
+        <Text style={styles.buttonText}>
+          Check Other Token (Smart Contract)
+        </Text>
       </TouchableOpacity>
 
       <TouchableOpacity

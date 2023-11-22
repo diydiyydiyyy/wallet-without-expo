@@ -114,8 +114,14 @@ const CheckOtherToken = ({route}: AppScreenProps) => {
       <Text style={styles.title}>WALLET APP</Text>
 
       <View style={styles.textContainer}>
-        <Text>Check Balance Token:</Text>
-        <Text>{address}</Text>
+        <View style={styles.textContainer}>
+          <Text>Address</Text>
+          <Text>{address}</Text>
+        </View>
+        <View style={styles.textContainer}>
+          <Text>Smart Contract:</Text>
+          <Text>{contract}</Text>
+        </View>
         <View style={styles.textContainer}>
           <TouchableOpacity
             style={[
@@ -125,7 +131,7 @@ const CheckOtherToken = ({route}: AppScreenProps) => {
               },
             ]}
             onPress={FetchData.token}>
-            <Text style={styles.buttonText}>Check Other Token</Text>
+            <Text style={styles.buttonText}>Check Balance</Text>
           </TouchableOpacity>
           {apiResponse?.hasOwnProperty('result') && (
             <View>

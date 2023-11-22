@@ -73,24 +73,30 @@ const SendTransaction = ({route}: AppScreenProps) => {
     <View style={styles.container}>
       <Text style={styles.title}>WALLET APP</Text>
 
-      <View style={styles.textContainer}>
-        <Text style={styles.textCenter}>Address Receiver:</Text>
-        <TextInput
-          value={receiver}
-          onChangeText={(e: string) => setReceiver(e)}
-          placeholder="Input Address Receiver"
-          style={styles.input}
-        />
-      </View>
+      <View style={[styles.widthFull, {gap: 8}]}>
+        <View style={styles.textContainer}>
+          <Text style={styles.textCenter}>Address Receiver:</Text>
+          <View style={styles.widthFull}>
+            <TextInput
+              value={receiver}
+              onChangeText={(e: string) => setReceiver(e)}
+              placeholder="Input Address Receiver"
+              style={styles.input}
+            />
+          </View>
+        </View>
 
-      <View style={styles.textContainer}>
-        <Text style={styles.textCenter}>Amount:</Text>
-        <TextInput
-          value={amount}
-          onChangeText={(e: string) => setAmount(e)}
-          placeholder="Input Amount"
-          style={styles.input}
-        />
+        <View style={styles.textContainer}>
+          <Text style={styles.textCenter}>Amount:</Text>
+          <View style={styles.widthFull}>
+            <TextInput
+              value={amount}
+              onChangeText={(e: string) => setAmount(e)}
+              placeholder="Input Amount"
+              style={styles.input}
+            />
+          </View>
+        </View>
       </View>
 
       {transactionHash && (
@@ -124,6 +130,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 30,
     gap: 16,
+    width: '100%',
   },
   title: {
     fontSize: 32,
@@ -156,5 +163,8 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
     textTransform: 'none',
+  },
+  widthFull: {
+    width: '100%',
   },
 });
