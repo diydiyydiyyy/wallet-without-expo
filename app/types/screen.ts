@@ -14,4 +14,16 @@ export type AppStackParamList = {
   Home: {secretKey: string};
   Mnemonic: {mnemonic: string; password: string};
   Password: undefined;
+  CheckOtherToken: {
+    wallet?: Wallet | null;
+    mnemonic?: string;
+    password?: string;
+    balance?: BigNumber;
+  };
+  SendTransaction: {
+    wallet?: Wallet | null;
+    mnemonic?: string;
+    password?: string;
+    balance?: BigNumber;
+  };
 };

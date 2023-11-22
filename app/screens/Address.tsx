@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 import {AppScreenProps} from 'app/types';
 import React, {useCallback, useEffect, useState} from 'react';
@@ -7,7 +8,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {BigNumber} from 'ethers/utils';
 import {encryptData} from '../utils';
 // const BASE_URL = `${process.env.BASE_INFURA_URL}${process.env.INFURA_KEY}`;
-// import Web3 from 'web3';
 
 const Address = ({route, navigation}: AppScreenProps) => {
   const param = route.params as {
@@ -19,11 +19,11 @@ const Address = ({route, navigation}: AppScreenProps) => {
   const [balance, setBalance] = useState<BigNumber | number | string>();
   const [isLoading, setIsLoading] = useState(false);
 
-  const fetchBalance = useCallback(async () => {
-    const provider = new ethers.providers.JsonRpcProvider(
-      'https://mainnet.infura.io/v3/2d730408bd194dbcaf2084b4d0006eb2',
-    );
+  const provider = new ethers.providers.JsonRpcProvider(
+    'https://rpc.testnet.fantom.network',
+  );
 
+  const fetchBalance = useCallback(async () => {
     try {
       if (param?.wallet?.address) {
         const newBalance = await provider.getBalance(param.wallet.address);
@@ -91,12 +91,52 @@ const Address = ({route, navigation}: AppScreenProps) => {
         <Text>Address:</Text>
         <Text>{param?.wallet?.address}</Text>
       </View>
-      {balance && (
+      {isLoading ? (
         <View style={styles.textContainer}>
-          <Text>Balance:</Text>
-          <Text>{balance?.toString()}</Text>
+          <Text>Loading balance..</Text>
         </View>
+      ) : (
+        balance && (
+          <View style={styles.textContainer}>
+            <Text>Balance My Address:</Text>
+            <Text>{balance?.toString()}</Text>
+          </View>
+        )
       )}
+
+      <TouchableOpacity
+        style={[
+          styles.button,
+          {
+            backgroundColor: '#772174',
+          },
+        ]}
+        onPress={() =>
+          navigation.navigate('CheckOtherToken', {
+            wallet: param?.wallet,
+            mnemonic: param?.mnemonic,
+            password: param?.password,
+          })
+        }>
+        <Text style={styles.buttonText}>Check Other Token</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[
+          styles.button,
+          {
+            backgroundColor: '#772174',
+          },
+        ]}
+        onPress={() =>
+          navigation.navigate('SendTransaction', {
+            wallet: param?.wallet,
+            mnemonic: param?.mnemonic,
+            password: param?.password,
+          })
+        }>
+        <Text style={styles.buttonText}>Send Transaction</Text>
+      </TouchableOpacity>
 
       <TouchableOpacity
         style={[

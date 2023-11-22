@@ -7,6 +7,8 @@ import Address from '../screens/Address';
 import Home from '../screens/Home';
 import Mnemonic from '../screens/Mnemonic';
 import Password from '../screens/Password';
+import CheckOtherToken from '../screens/CheckOtherToken';
+import SendTransaction from '../screens/SendTransaction';
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
 
@@ -19,21 +21,11 @@ export const Router = () => {
           component={Password}
           options={{headerShown: false}}
         />
-        <Stack.Screen
-          name="Mnemonic"
-          component={Mnemonic}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="Address"
-          component={Address}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="Home"
-          component={Home}
-          options={{headerShown: false}}
-        />
+        <Stack.Screen name="Mnemonic" component={Mnemonic} />
+        <Stack.Screen name="Address" component={Address} />
+        <Stack.Screen name="CheckOtherToken" component={CheckOtherToken} />
+        <Stack.Screen name="SendTransaction" component={SendTransaction} />
+        <Stack.Screen name="Home" component={Home} />
       </>
     </Stack.Navigator>
   );

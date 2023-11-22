@@ -1,3 +1,4 @@
+export * from './convertNumber';
 export * from './decryptData';
 export * from './encryptData';
 export * from './generateMnemonic';
